@@ -2,9 +2,12 @@ package domain
 
 import (
 	"bookstore_users_api/domain/users"
+	"bookstore_users_api/infraestructure/mysql"
 	"bookstore_users_api/utils"
 )
 func GetUser(userId int64) (*users.User, *utils.RestError){
+
+	mysql.Init()
 
 	result := &users.User{Id: userId}
 
