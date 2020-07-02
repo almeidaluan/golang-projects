@@ -1,4 +1,4 @@
-package mysql
+package db_global
 
 import (
 	"database/sql"
@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	mysqlDB *sql.DB
+	Client *sql.DB
 )
 
 func Init(){
@@ -22,12 +22,12 @@ func Init(){
 
 
 	var err error
-	mysqlDB, err := sql.Open("mysql",datasourceName)
+	Client, err := sql.Open("mysql",datasourceName)
 
 	if err != nil {
 		panic(err)
 	}
-	if err = mysqlDB.Ping(); err != nil {
+	if err = Client.Ping(); err != nil {
 		panic(err)
 	}
 	log.Println(" Database  successfuly configured")

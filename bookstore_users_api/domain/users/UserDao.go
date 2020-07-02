@@ -21,6 +21,8 @@ func something(){
 }
 
 func (user *User) Get() *utils.RestError{
+
+
 	result := usersDB[user.Id]
 	if result == nil{
 		return utils.NotFoundError("User not found",errors.New("user not found"))
