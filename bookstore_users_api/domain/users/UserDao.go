@@ -1,52 +1,60 @@
 package users
 
 import (
+	"bookstore_users_api/infraestructure/mysql/db_global"
 	"bookstore_users_api/utils"
-	"errors"
 	"fmt"
+	"strings"
 )
 
-var (
-	usersDB = make(map[int64] *User)
+const (
+	queryInsertUser = "INSERT INTO users(first_name, last_name, email, date_created) VALUES(?, ?, ?, ?);"
+	queryGetUser = "SELECT id,first_name,last_name,email,date_created from users WHERE id = ?"
 )
 
-func something(){
-	user := User{}
+func (user *User) Get() *utils.RestError {
 
-	if err := user.Get(); err != nil{
-		fmt.Print(err)
-		return
+	db_global.Init()
+	stmt, err := db_global.Client.Prepare(queryGetUser)
+
+	if err != nil {
+		return utils.InternalServerError(fmt.Sprintf("Error when trying to get user : %s "), err.Error())
 	}
+	defer stmt.Close()
 
-}
+	resultGetUser := stmt.QueryRow(user.Id)
 
-func (user *User) Get() *utils.RestError{
-
-
-	result := usersDB[user.Id]
-	if result == nil{
-		return utils.NotFoundError("User not found",errors.New("user not found"))
+	if err := resultGetUser.Scan(&user.Id,&user.FirstName,&user.LastName,&user.Email,&user.DateCreated); err != nil{
+		if strings.Contains(err.Error(),"no rows in result set"){
+			return utils.NotFoundError(fmt.Sprintf("Error when trying to get user - NotFound : %d ",user.Id), err.Error())
+		}
+		return utils.InternalServerError(fmt.Sprintf("Error  when trying get user: %d  %s",user.Id, err.Error()),"Internal Server Error")
 	}
-	user.Id = result.Id
-	user.FirstName = result.FirstName
-	user.LastName = result.LastName
-	user.Email = result.Email
-	user.DateCreated = result.DateCreated
 
 	return nil
 }
 
-func (user *User) Save() *utils.RestError{
+func (user *User) Save() *utils.RestError {
+	db_global.Init()
+	stmt, err := db_global.Client.Prepare(queryInsertUser)
 
-	current := usersDB[user.Id]
-
-	if  current != nil{
-		if current.Email == user.Email{
-			return utils.NewBadRequestError("email %d already exist", errors.New("ta funcionando nao"))
-		}
-		return utils.NewBadRequestError("User %d already exist", errors.New("user already exist"))
+	if err != nil {
+		return utils.InternalServerError(fmt.Sprintf("Error when trying to save user : %s "), err.Error())
 	}
-	usersDB[user.Id] = user
+	defer stmt.Close()
+
+	resultInsert, err := stmt.Exec(user.FirstName, user.LastName, user.Email, user.DateCreated)
+
+	if err != nil {
+		return utils.InternalServerError(fmt.Sprintf("Error when trying to save user : %s "), err.Error())
+	}
+	userId, err := resultInsert.LastInsertId()
+
+	if err != nil {
+		return utils.InternalServerError(fmt.Sprintf("Error when trying to save user: %s"), err.Error())
+	}
+
+	user.Id = userId
 
 	return nil
 }

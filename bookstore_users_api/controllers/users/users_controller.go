@@ -15,7 +15,7 @@ func GetUser(  c *gin.Context){
 	userId,userErr := strconv.ParseInt(c.Param("user_id"),10, 64)
 
 	if userErr != nil {
-		err := utils.BadRequestError("Invalid user id",nil)
+		err := utils.BadRequestError("Invalid user id", userErr.Error())
 		c.JSON(err.Status,err)
 	}
 
@@ -40,7 +40,7 @@ func SaveUser(c  *gin.Context){
 
 	if error := c.ShouldBindJSON(&user); error != nil{
 		//TODO: HANDLE JSON ERROR
-		restError := utils.BadRequestError("Invalid Json Body",error)
+		restError := utils.BadRequestError("Invalid Json Body",error.Error())
 		c.JSON(restError.Status, restError)
 		return
 	}

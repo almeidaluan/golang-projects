@@ -2,7 +2,6 @@ package users
 
 import (
 	"bookstore_users_api/utils"
-	"errors"
 	"strings"
 )
 
@@ -19,7 +18,7 @@ func (user *User) Validate() *utils.RestError {
 	user.Email = strings.TrimSpace(strings.ToLower(user.Email))
 
 	if user.Email == ""{
-		return utils.BadRequestError("Invalid Email Address",errors.New("Invalid Email"));
+		return utils.BadRequestError("Invalid Email Address","Bad Request")
 	}
 
 	return nil
