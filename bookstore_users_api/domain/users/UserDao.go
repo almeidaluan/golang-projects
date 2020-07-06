@@ -9,7 +9,7 @@ import (
 
 const (
 	queryInsertUser = "INSERT INTO users(first_name, last_name, email, date_created) VALUES(?, ?, ?, ?);"
-	queryGetUser = "SELECT id,first_name,last_name,email,date_created from users WHERE id = ?"
+	queryGetUser = "SELECT id,first_name,last_name,email,date_created from users WHERE id = ? "
 )
 
 func (user *User) Get() *utils.RestError {
