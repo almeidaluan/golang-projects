@@ -13,6 +13,15 @@ func GetUser(userId int64) (*users.User, *utils.RestError){
 	}
 	return result, nil
 }
+
+func BulkInsert() *utils.RestError{
+	if err := users.BulkInsert(); err != nil{
+		return err
+	}
+	return nil
+}
+
+
 func CreateUser(user users.User) (*users.User, *utils.RestError){
 
 	if 	err := user.Validate(); err != nil{

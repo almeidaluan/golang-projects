@@ -29,8 +29,12 @@ func GetUser(  c *gin.Context){
 	c.JSON(http.StatusOK, result)
 }
 
-func SearchUser(c  *gin.Context){
-	c.String(http.StatusNotImplemented, "Implemente me !!! ")
+func BulkInsert(c  *gin.Context){
+//	c.String(http.StatusNotImplemnted, "Implemente me !!! ")
+	if err := domain.BulkInsert(); err != nil {
+		c.JSON(err.Status,err)
+	}
+	c.JSON(http.StatusCreated,nil)
 }
 
 func SaveUser(c  *gin.Context){
